@@ -79,7 +79,7 @@ class N2CompletionPlugin {
         }
 
         //TODO: Issue ajax query and build the drop-down menu list here.
-        alert("Hello world");
+
     }
 
     /*
@@ -102,7 +102,7 @@ window.onload = () => {
 (function ($) {
     CKEDITOR.plugins.add('n2completion', {
         icons: '',
-        init: function (editor:CKEDITOR.editor) {
+        init: function (editor: CKEDITOR.editor) {
             var mentions = N2CompletionPlugin.get_instance(editor);
 
             /* The only way (it seems) to get a reliable, cross-browser and platform return for which key was pressed,
