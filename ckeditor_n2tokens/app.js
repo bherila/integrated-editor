@@ -1,3 +1,16 @@
+///<reference path="Scripts/typings/jquery/jquery.d.ts"/>
+var Keycode;
+(function (Keycode) {
+    Keycode[Keycode["enter"] = 13] = "enter";
+    Keycode[Keycode["left"] = 37] = "left";
+    Keycode[Keycode["up"] = 38] = "up";
+    Keycode[Keycode["right"] = 39] = "right";
+    Keycode[Keycode["down"] = 40] = "down";
+    Keycode[Keycode["del"] = 46] = "del";
+    Keycode[Keycode["home_end"] = 91] = "home_end";
+    Keycode[Keycode["backspace"] = 8] = "backspace";
+})(Keycode || (Keycode = {}));
+
 var N2CompletionPluginInstance = (function () {
     function N2CompletionPluginInstance() {
     }
@@ -71,20 +84,8 @@ var N2CompletionPlugin = (function () {
     * @returns {Boolean} Whether or not the char should stop the observation
     */
     N2CompletionPlugin.prototype.break_on = function (charcode) {
-        // 13 = enter
-        // 37 = left key
-        // 38 = up key
-        // 39 = right key
-        // 40 = down key
-        // 46 = delete
-        // 91 = home/end (?)
-        var special = [13, 37, 38, 39, 40, 46, 91];
-        for (var i = 0; i < special.length; i++) {
-            if (special[i] == charcode) {
-                return true;
-            }
-        }
-        return false;
+        var specialChars = [Keycode.backspace, Keycode.del, Keycode.down, Keycode.enter, Keycode.home_end, Keycode.left, Keycode.right, Keycode.up];
+        return specialChars.indexOf(charcode) >= 0;
     };
     N2CompletionPlugin.instances = [];
     return N2CompletionPlugin;
@@ -111,7 +112,7 @@ window.onload = function () {
                 * which does not register on keypress... javascript is weird...
                 */
                 editable.attachListener(editable, 'keyup', function (evt) {
-                    if (evt.data.$.which === 8) {
+                    if (evt.data.$.which === Keycode.backspace) {
                         mentions.char_input.pop();
                         var selection = this.editor.getSelection();
                         mentions.get_completion_items(selection);

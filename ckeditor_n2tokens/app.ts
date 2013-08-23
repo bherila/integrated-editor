@@ -1,6 +1,15 @@
 ///<reference path="Scripts/typings/jquery/jquery.d.ts"/>
-////<reference path="ckeditor.js"/>
-declare var CKEDITOR: any;
+
+enum Keycode {
+    enter = 13,
+    left = 37,
+    up = 38,
+    right = 39,
+    down= 40,
+    del = 46,
+    home_end = 91,
+    backspace = 8
+}
 
 class N2CompletionPluginInstance {
     id: number;
@@ -80,33 +89,20 @@ class N2CompletionPlugin {
      * @returns {Boolean} Whether or not the char should stop the observation
      */
     break_on(charcode: number): boolean {
-        // 13 = enter
-        // 37 = left key
-        // 38 = up key
-        // 39 = right key
-        // 40 = down key
-        // 46 = delete
-        // 91 = home/end (?)
-        var special = [13, 37, 38, 39, 40, 46, 91];
-        for (var i = 0; i < special.length; i++) {
-            if (special[i] == charcode) {
-                return true;
-            }
-        }
-        return false;
+        var specialChars: number[] = [Keycode.backspace, Keycode.del, Keycode.down, Keycode.enter, Keycode.home_end, Keycode.left, Keycode.right, Keycode.up];
+        return specialChars.indexOf(charcode) >= 0;
     }
 
 }
 
 window.onload = () => {
-    CKEDITOR.replace('editor1', { extraPlugins: 'n2completion' });
+    CKEDITOR.replace('editor1', <CKEDITOR.config>{ extraPlugins: 'n2completion' });
 };
-
 
 (function ($) {
     CKEDITOR.plugins.add('n2completion', {
         icons: '',
-        init: function (editor) {
+        init: function (editor:CKEDITOR.editor) {
             var mentions = N2CompletionPlugin.get_instance(editor);
 
             /* The only way (it seems) to get a reliable, cross-browser and platform return for which key was pressed,
@@ -120,7 +116,7 @@ window.onload = () => {
                  * which does not register on keypress... javascript is weird...
                  */
                 editable.attachListener(editable, 'keyup', function (evt) {
-                    if (evt.data.$.which === 8) { // 8 == backspace
+                    if (evt.data.$.which === Keycode.backspace) {
                         mentions.char_input.pop();
                         var selection = this.editor.getSelection();
                         mentions.get_completion_items(selection);
